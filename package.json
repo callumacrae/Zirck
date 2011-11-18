@@ -1,0 +1,9 @@
+{
+  "name": "zirck",
+  "description": "A web-based IRC client.",
+  "author": "Callum Macrae <callum@lynxphp.com>",
+  "dependencies": {
+    "socket.io": ">= 0.8.7"
+  },
+  "engine": "node >= 0.4.8"
+}
