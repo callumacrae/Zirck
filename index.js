@@ -35,6 +35,23 @@ io.sockets.on('connection', function(socket) {
 		ircSock.raw('JOIN :' + chan);
 	});
 	
+	socket.on('msg', function(data) {
+		if (!data.chan || !data.msg) {
+			socket.send('error', 'Either no channel or message recieved by server.');
+		} else {
+			if (/[\n|\r]/.test(data.msg)) {
+				data.msg = data.msg.split(/[\r\n|\n|\r]/);
+				for (var i = 0; i < data.msg.length; i++) {
+					if (data.msg[i]) {
+						ircSock.raw('PRIVMSG ' + data.chan + ' :' + data.msg[i]);
+					}
+				}
+			} else {
+				ircSock.raw('PRIVMSG ' + data.chan + ' :' + data.msg);
+			}
+		}
+	});
+
 	socket.on('raw', function(raw) {
 		ircSock.raw(raw);
 	});
