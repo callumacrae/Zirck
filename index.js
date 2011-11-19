@@ -1,20 +1,71 @@
 var app = require('http').createServer(handler),
 	io = require('socket.io').listen(app),
+	less = require('less'),
 	IRC = require('./lib/irc'),
 	fs = require('fs');
 
 app.listen(8080);
 
 function handler(req, res) {
-	fs.readFile(__dirname + '/views/index.html', function(err, data) {
-		if (err) {
-			res.writeHead(500);
-			return res.end('Error loading index.html');
-		}
+	var file = false, mime;
+	switch(req.url) {
+		case '/':
+			file = 'index.html';
+			mime = 'text/html';
+			break;
 		
-		res.writeHead(200);
-		res.end(data);
-	});
+		case '/style.css':
+			fs.readFile(__dirname + '/views/style.css', function(err, data) {
+				if (err) {
+					res.writeHead(500);
+					return res.end('An error has occurred.');
+				}
+				
+				less.render(String(data), function(err, data) {
+					if (err) {
+						res.writeHead(500);
+						return res.end('An error has occurred.');
+					}
+				
+					res.writeHead(200, {'Content-Type': 'text/css'});
+					res.end(data);
+				});
+			});
+			break;
+		
+		case '/script.js':
+			fs.readFile(__dirname + '/views/script.js/init.js', function(err, data) {
+				if (err) {
+					res.writeHead(500);
+					return res.end('An error has occurred.');
+				}
+				
+				data = String(data).replace(/{\% include "([a-z]+\.js)" \%}/g, function() {
+					return fs.readFileSync(__dirname + '/views/script.js/' + arguments[1], 'utf8')
+				});
+				
+				res.writeHead(200, {'Content-Type': 'application/javascript'});
+				res.end(data);
+			});
+			break;
+		
+		default:
+			res.writeHead(404);
+			res.end('404');
+			break;
+	}
+	
+	if (file) {
+		fs.readFile(__dirname + '/views/' + file, function(err, data) {
+			if (err) {
+				res.writeHead(500);
+				return res.end('An error has occurred.');
+			}
+			
+			res.writeHead(200, {'Content-Type': mime});
+			res.end(data);
+		});
+	}
 }
 
 io.sockets.on('connection', function(socket) {
@@ -51,12 +102,21 @@ io.sockets.on('connection', function(socket) {
 			}
 		}
 	});
+	
+	socket.on('nick', function(nick, fn) {
+		ircSock.on_once(new RegExp('^:[^!]+!~?zirck@[^ ]+ NICK :(' + nick.slice(0, 7) + '[^ ]+)$'), function(info) {
+			fn(info[1]);
+		});
+		ircSock.raw('NICK ' + nick);
+	});
 
 	socket.on('raw', function(raw) {
 		ircSock.raw(raw);
 	});
 	
 	socket.on('disconnect', function(data) {
-		ircSock.quit('http://zirck.com/')
+		if (ircSock) {
+			ircSock.quit('http://zirck.com/')
+		}
 	});
 });
