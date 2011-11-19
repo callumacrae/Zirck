@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>zirck</title>
+</head>
+<body>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		var socket = io.connect();
+		var data = {
+			nick: 'callum-zirck',
+			real: 'Callum Macrae',
+			addr: 'irc.x10hosting.com'
+		};
+		socket.on('connect', function() {
+			socket.emit('user', data, function() {
+				console.log('connecting');
+			});
+		});
+	</script>
+</body>
+</html>
