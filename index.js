@@ -79,6 +79,67 @@ io.sockets.on('connection', function(socket) {
 			port: 6667,
 			addr: data.addr
 		});
+		ircSock.on_once(/^:[^ ]+ 372 ([^ ]+) :/, function(info) {
+			ircSock.currentNick = info[1];
+		});
+		
+		ircSock.on(/^:([^ !]+)![^ !@]+@[^ ]+ PRIVMSG ([^ ]+) :(.+)$/, function(info) {
+			socket.emit('msg', {
+				chan: info[2],
+				msg: info[3],
+				nick: info[1]
+			});
+		});
+		
+		ircSock.on(/^:([^ !]+)![^ !@]+@[^ ]+ NOTICE ([^ ]+) :(.+)$/, function(info) {
+			socket.emit('notice', {
+				chan: info[2],
+				msg: info[3],
+				nick: info[1]
+			});
+		});
+		
+		ircSock.on(/^:([^ !]+)![^ !@]+@[^ ]+ JOIN ([^ ]+)$/, function(info) {
+			socket.emit('join', {
+				chan: info[2],
+				nick: info[1]
+			});
+		});
+		
+		ircSock.on(/^:([^ !]+)![^ !@]+@[^ ]+ PART ([^ ]+) :(.+)$/, function(info) {
+			socket.emit('part', {
+				chan: info[2],
+				msg: info[3],
+				nick: info[1]
+			});
+		});
+		
+		ircSock.on(/^:([^ !]+)![^ !@]+@[^ ]+ QUIT :(.+)$/, function(info) {
+			socket.emit('quit', {
+				msg: info[3],
+				nick: info[1]
+			});
+		});
+		
+		ircSock.on(/^:([^ !]+)![^ !@]+@[^ ]+ NICK :(.+)$/, function(info) {
+			if (info[1] === ircSock.currentNick) {
+				ircSock.currentNick = info[3];
+			}
+			
+			socket.emit('nick', {
+				nick: info[3],
+				old: info[1]
+			});
+		});
+		
+		ircSock.on(/^:([^ !]+)(?:![^ !@]+@[^ ]+)? MODE ([^ ]+) (.+)$/, function(info) {
+			socket.emit('mode', {
+				chan: info[2],
+				modes: info[3],
+				nick: info[1]
+			});
+		});
+		
 		fn();
 	});
 	
