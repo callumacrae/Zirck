@@ -23,6 +23,11 @@ function handler(req, res) {
 			file = 'js/script.js';
 			contentType = 'application/javascript';
 			break;
+		
+		case '/jquery.js':
+			file = 'js/jquery.min.js';
+			contentType = 'application/javascript';
+			break;
 	}
 
 	fs.readFile('views/' + file, function (err, data) {
