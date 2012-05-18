@@ -1,0 +1,61 @@
+body {
+	margin: 0;
+}
+
+#topic {
+	width: 100%;
+	border-bottom: 1px black solid;
+	text-align: center;
+	padding: 2px 0;
+}
+
+@sidebarWidth: 15%;
+#sidebar {
+	position: absolute;
+	width: @sidebarWidth;
+	border-right: 1px black solid;
+	
+	padding-top: 10px;
+	
+	top: 22px;
+	bottom: 23px;
+	
+	strong {
+		padding-left: 10px;
+	}
+
+	ul {
+		margin-top: 5px;
+		padding-left: 20px;
+		list-style-type: none;
+	}
+}
+
+#msgs {
+	position: absolute;
+	width: 100% - @sidebarWidth;
+	right: 0;
+	
+	top: 22px;
+	bottom: 23px;
+	
+	overflow: auto;
+	
+	ul {
+		list-style-type: none;
+		margin: 6px 0;
+		padding-left: 10px;
+	}
+}
+
+#message {
+	position: absolute;
+	bottom: 0;
+
+	border: 0;
+	border-top: 1px black solid;
+	
+	margin: 0;
+	padding: 5px 0;
+	width: 100%;
+}
