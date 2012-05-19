@@ -43,31 +43,63 @@ function handler(req, res) {
 
 io.sockets.on('connection', function (socket) {
 	socket.ircSocket = false;
-	socket.on('user', function (data) {
-		data.nick = data.nick || 'Zirck' + Math.ceil(Math.random() * 1000);
-		data.server = data.server || 'irc.efnet.org';
+	socket.on('user', function (userData) {
+		userData.nick = userData.nick || 'Zirck' + Math.ceil(Math.random() * 1000);
+		userData.server = userData.server || 'irc.efnet.org';
 		
 		socket.ircSocket = new net.Socket();
 		
 		socket.ircSocket.raw = function (string) {
 			socket.ircSocket.write(string + '\n', 'ascii');
-		}
+		};
 		
 		socket.ircSocket.on('connect', function () {
 			setTimeout(function() {
-                socket.ircSocket.raw('NICK ' + data.nick);
+                socket.ircSocket.raw('NICK ' + userData.nick);
                 socket.ircSocket.raw('USER zirck zirck.com zirck :Zirck user');
 			}, 1000);
+	
+			socket.on('raw', function (data) {
+				socket.ircSocket.raw(data);
+			});
+			
+			socket.on('join', function (chan) {
+				socket.ircSocket.raw('JOIN ' + chan);
+			});
+			
+			socket.on('msg', function (msg) {
+				socket.ircSocket.raw('PRIVMSG ' + msg.chan + ' :' + msg.msg);
+				msg.nick = userData.nick;
+				socket.emit('msg', msg);
+			});
 		});
 		
 		socket.ircSocket.setEncoding('ascii');
 		socket.ircSocket.setNoDelay();
-		socket.ircSocket.connect(6667, data.server);
+		socket.ircSocket.connect(6667, userData.server);
 		
 		socket.ircSocket.on('data', function (data) {
+			var info;
 			data = data.split('\n');
 			for (var i = 0; i < data.length; i++) {
-				if (data[i].trim()) {
+				if ((info = /^PING :(.+)$/.exec(data[i]))) {
+					socket.ircSocket.raw('PONG :' + info[1]);
+				} else if ((info = /^:([^:!]+)!(~?[^!@]+)@([^ @]+) JOIN :([^ ]+)$/.exec(data[i]))) {
+					socket.emit((info[1] === userData.nick) ? 'selfJoin' : 'join', {
+						nick: info[1],
+						ident: info[2],
+						host: info[3],
+						chan: info[4]
+					});
+				} else if ((info = /^:([^:!]+)!(~?[^!@]+)@([^ @]+) PRIVMSG ([^ ]+) :([^ ]+)$/.exec(data[i]))) {
+					socket.emit('msg', {
+						nick: info[1],
+						ident: info[2],
+						host: info[3],
+						chan: info[4],
+						msgs: info[5]
+					});
+				} else if (data[i].trim()) {
 					socket.emit('raw', data[i].trim());
 				}
 			}
