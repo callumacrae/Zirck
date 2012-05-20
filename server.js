@@ -45,7 +45,7 @@ io.sockets.on('connection', function (socket) {
 	socket.ircSocket = false;
 	socket.on('user', function (userData) {
 		userData.nick = userData.nick || 'Zirck' + Math.ceil(Math.random() * 1000);
-		userData.server = userData.server || 'irc.efnet.org';
+		userData.server = userData.server || 'irc.freenode.net';
 		
 		socket.ircSocket = new net.Socket();
 		
@@ -82,16 +82,16 @@ io.sockets.on('connection', function (socket) {
 			var info;
 			data = data.split('\n');
 			for (var i = 0; i < data.length; i++) {
-				if ((info = /^PING :(.+)$/.exec(data[i]))) {
+				if ((info = /^PING :(.+)$/.exec(data[i].trim()))) {
 					socket.ircSocket.raw('PONG :' + info[1]);
-				} else if ((info = /^:([^:!]+)!(~?[^!@]+)@([^ @]+) JOIN :([^ ]+)$/.exec(data[i]))) {
+				} else if ((info = /^:([^:!]+)!(~?[^!@]+)@([^ @]+) JOIN :([^ ]+)$/.exec(data[i].trim()))) {
 					socket.emit((info[1] === userData.nick) ? 'selfJoin' : 'join', {
 						nick: info[1],
 						ident: info[2],
 						host: info[3],
 						chan: info[4]
 					});
-				} else if ((info = /^:([^:!]+)!(~?[^!@]+)@([^ @]+) PRIVMSG ([^ ]+) :([^ ]+)$/.exec(data[i]))) {
+				} else if ((info = /^:([^:!]+)!(~?[^!@]+)@([^ @]+) PRIVMSG ([^ ]+) :([^ ]+)$/.exec(data[i].trim()))) {
 					socket.emit('msg', {
 						nick: info[1],
 						ident: info[2],
