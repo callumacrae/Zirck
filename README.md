@@ -32,4 +32,4 @@ If you want to discuss sponsorship or anything like that, email me using the det
 
 ## Author
 
-Zirck is written by Callum Macrae. You can contact me via email, <callum@macr.ae>, or via Skype (same username as on GitHub).
+Zirck is written by Callum Macrae. You can contact me via email, <callum@macr.ae>, or via Skype (same username as on GitHub). You could even follow me on Twitter: @callumacrae.
