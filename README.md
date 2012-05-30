@@ -2,11 +2,9 @@
 
 Zirck is a currently in-development IRC client for the web. There is one fundamental difference between Zirck and other web-based IRC clients such as Mibbit: it won't suck. It won't use Flash, it'll look good, and it'll be fast. _Really_ fast.
 
-I'll be built using Javatestg and Node.js, using a the socket.io and jQuery libraries. It might even work in Internet Explorer, when it is done. But probably not.
+I'll be built using JavaScript and Node.js, using the socket.io and jQuery libraries. It might even work in Internet Explorer, when it is done. But probably not.
 
 ## Using Zirck
-
-This is other host.
 
 You can play on a preview live of Zirck on the website: <http://zirck.com:8080>. It might not be very stable, and it might not work properly in the beginning stages of development. It might also look like shit until a designer has done something awesome with it; I'm no designer.
 
