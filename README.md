@@ -6,7 +6,7 @@ I'll be built using JavaScript and Node.js, using the socket.io and jQuery libra
 
 ## Using Zirck
 
-You can play on a preview live of Zirck on the website: <http://zirck.com:8080>. It might not be very stable, and it might not work properly in the beginning stages of development. It might also look like shit until a designer has done something awesome with it; I'm no designer.
+You will be able to play with a preview live of Zirck on the website: <http://zirck.com:8080>. It might not be very stable, and it might not work properly in the beginning stages of development. It might also look like shit until a designer has done something awesome with it; I'm no designer.
 
 ## Installing Zirck locally
 
